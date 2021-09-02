@@ -1,0 +1,73 @@
+<html>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.1.1/redux.min.js" integrity="sha512-F21iSaHGX/3NFz5SuwoH6pGhTPxtoJoWWULqQVPQPtLm7nbK5r8vRSSSYy3Aj+H39cVrVm4+3ikGoVD1AjE0sQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+      .box {
+        border: 5px solid #C6FFDD;
+        padding: 10px;
+      }
+    </style>
+    <div id="pink"></div>
+    <div id="blue"></div>
+    <div id="green"></div>
+    <script>
+        function reducer(state,action){
+          console.log(state,action);
+          if(state === undefined){
+                return {color:'#C6FFDD',title:'잔!'}
+          }
+          let newState;
+          if(action.type === 'CHANGE_COLOR'){
+            newState = Object.assign({},{color:action.color,title:action.title});
+
+          }
+          return newState;
+          
+        }
+        var store = Redux.createStore(reducer);
+        
+      function pink(){
+        var state = store.getState();
+        document.querySelector("#pink").innerHTML = `
+                  <div class="box" id = "component_pink" style ="background-color:${state.color}">
+                  <h1>${state.title}</h1>
+                  <input type="button" value="Pink!" onclick="
+                    store.dispatch({type:'CHANGE_COLOR', color:'#F4C7EE',title:'핑크'})
+                    ">
+                  </div>
+                  `;
+      };
+      store.subscribe(pink);
+      pink();
+
+      function blue(){
+        var state = store.getState();
+        document.querySelector("#blue").innerHTML = `
+                  <div class="box" id = "component_pink" style ="background-color:${state.color}">
+                  <h1>${state.title}</h1>
+                  <input type="button" value="Pink!" onclick="
+                    store.dispatch({type:'CHANGE_COLOR', color:'#96D0FF',title:'블루'})
+                    ">
+                  </div>
+                  `;
+      };
+      store.subscribe(blue);
+      blue();
+
+      function green(){
+        var state = store.getState();
+        document.querySelector("#green").innerHTML = `
+                  <div class="box" id = "component_pink" style ="background-color:${state.color}">
+                  <h1>${state.title}</h1>
+                  <input type="button" value="Pink!" onclick="
+                    store.dispatch({type:'CHANGE_COLOR', color:'#C6FFDD',title:'그린'})
+                    ">
+                  </div>
+                  `;
+      };
+      store.subscribe(green);
+      green();
+
+    </script>
+  </body>
+</html>
