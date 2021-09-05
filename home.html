@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.1.1/redux.min.js"></script>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="home.css" />
+    <title>리덕스</title>
+  </head>
+  <body>
+      <div id="subject"></div>
+      <div id="toc"></div>
+      <div id="control"></div>
+      <div id="article"></div>
+    <script>
+      function subject() {
+        document.querySelector('#subject').innerHTML = `
+        <header>
+        <h1><a href="/" onclick="
+          event.preventDefault();
+          let action = {type:'SELECT', id:null}
+          store.dispatch(action)
+          ">하이루</a></h1>
+        안녕,조용한 밤이야.
+        </header>
+    `;
+      }
+      function toc() {
+        let state = store.getState();
+        let list='';
+        let i = 0;
+        while(i < state.contents.length){
+          list = list + `
+            <li>
+              <a href="/${state.contents[i].id}
+              " onclick="
+              event.preventDefault();
+              let action = {type:'SELECT', id:${state.contents[i].id}};
+              store.dispatch(action);
+              ">
+                ${state.contents[i].title}
+              </a>
+            </li>
+              `;
+              i = i + 1;      
+        }
+        
+       document.querySelector('#toc').innerHTML =`
+       <ol>
+          ${list}
+        </ol>
+       `}
+      function control(){
+        document.querySelector('#control').innerHTML = ` 
+        <ul>
+           <li><a href="/create" onclick="
+            event.preventDefault();
+            ">Create</a></li>
+           <li><input type="button" value="Delete"></li>
+       </ul>
+    `;
+      }
+      function article(){
+        let state = store.getState();
+        if(state.mode === 'create'){
+          document.querySelector('#article').innerHTML=`
+          <article>
+            <form onsubmit="
+              event.preventDefault();
+              let _title = this.title.value;
+              let _desc = this.desc.value;  
+              console.log(_title,_desc) 
+              store.dispatch({
+                type:'CREATE',
+                title:_title,
+                desc:_desc,
+              });
+            ">
+              <p>
+                <input type='text' name='title' placeholder='뭐'>  
+              </p> 
+              <P>
+                <textarea name='desc' placeholder='뭘봐'></textarea>
+              </p>   
+              <p>
+                <input type='submit'>
+              </p>
+            </form>
+          </article>
+          ` 
+        }else if(state.mode === 'read'){
+          let i = 0;
+        let aTitle,aDesc;
+        while(state.seleced_id === null){
+          aTitle = "사실좀ㅁ졸려";
+          aDesc = "흐아아아아암"
+          break;
+        }
+        while(i < state.contents.length){
+          if(state.contents[i].id === state.seleced_id){
+              aTitle = state.contents[i].title;
+              aDesc = state.contents[i].desc;
+              break;
+          }
+          i = i + 1;
+        }
+          document.querySelector('#article').innerHTML = `
+          <article>
+          <h2>${aTitle}</h2>
+          ${aDesc}
+          </article>
+          `
+        }
+      }
+      function reducer(state,action){
+        console.log(state,action);
+        if(state === undefined){
+          return {
+            max_id:2,
+            mode:'create',
+            seleced_id:2,
+            contents:[
+              {id:1,title:'바람',desc:'산책나갈까아'},
+              {id:2,title:'공기',desc:'비우는마음'}     
+            ]
+          }
+        }
+        let newstate;
+        if(action.type === 'SELECT'){
+          newstate = Object.assign({},state,{
+            seleced_id:action.id,
+            mode:'read'  
+          })
+        }else if(action.type === 'CREATE'){
+          let new_max_id = state.max_id + 1;
+          let newContents = state.contents.concat();
+          newContents.push({id:new_max_id ,title:action.title, desc:action.desc})
+          newState = Object.assign({},state,{
+            max_id : new_max_id,
+            contents : newContents,
+            mode:'read',
+          })
+        }
+        console.log(action,state,newstate);
+        return newstate;
+      }
+      let store = Redux.createStore(reducer);
+      store.subscribe(article);
+      store.subscribe(toc);
+      subject();
+      toc();
+      control();
+      article();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+*{
+    color: #96D0FF;
+}
+li{
+      color: #F4C7EE;
+}
+a{
+    text-decoration: none;
+}
+input{
+    border:1px solid #F4C7EE;
+    background-color:white;
+}
