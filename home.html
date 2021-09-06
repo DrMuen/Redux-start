@@ -10,15 +10,13 @@
       <div id="subject"></div>
       <div id="toc"></div>
       <div id="control"></div>
-      <div id="article"></div>
+      <div id="content"></div>
     <script>
       function subject() {
         document.querySelector('#subject').innerHTML = `
         <header>
         <h1><a href="/" onclick="
           event.preventDefault();
-          let action = {type:'SELECT', id:null}
-          store.dispatch(action)
           ">하이루</a></h1>
         안녕,조용한 밤이야.
         </header>
@@ -52,30 +50,29 @@
       function control(){
         document.querySelector('#control').innerHTML = ` 
         <ul>
-           <li><a href="/create" onclick="
+           <li><a onclick="
             event.preventDefault();
             
-            ">Create</a></li>
-           <li><input type="button" value="Delete"></li>
+            "  href="/create">Create</a></li>
+           <li><input type="button" value="delete"></li>
        </ul>
     `;
       }
       function article(){
         let state = store.getState();
         if(state.mode === 'create'){
-          document.querySelector('#article').innerHTML=`
+          document.querySelector('#content').innerHTML=`
           <article>
             <form onsubmit="
               event.preventDefault();
               let _title = this.title.value;
               let _desc = this.desc.value;  
-              console.log(_title,_desc) 
               store.dispatch({
                 type:'CREATE',
                 title:_title,
                 desc:_desc,
               });
-            ">
+              ">
               <p>
                 <input type='text' name='title' placeholder='뭐'>  
               </p> 
@@ -90,13 +87,8 @@
           ` 
         }else if(state.mode === 'read'){
           let i = 0;
-        let aTitle,aDesc;
-        while(state.seleced_id === null){
-          aTitle = "사실좀ㅁ졸려";
-          aDesc = "흐아아아아암"
-          break;
-        }
-        while(i < state.contents.length){
+          let aTitle,aDesc;
+          while(i < state.contents.length){
           if(state.contents[i].id === state.seleced_id){
               aTitle = state.contents[i].title;
               aDesc = state.contents[i].desc;
@@ -104,7 +96,7 @@
           }
           i = i + 1;
         }
-          document.querySelector('#article').innerHTML = `
+          document.querySelector('#content').innerHTML = `
           <article>
           <h2>${aTitle}</h2>
           ${aDesc}
@@ -113,7 +105,6 @@
         }
       }
       function reducer(state,action){
-        console.log(state,action);
         if(state === undefined){
           return {
             max_id:2,
@@ -125,24 +116,23 @@
             ]
           }
         }
-        let newstate;
+        let newState;
         if(action.type === 'SELECT'){
-          newstate = Object.assign({},state,{
+          newState = Object.assign({},state,{
             seleced_id:action.id,
-            mode:'read'  
           })
         }else if(action.type === 'CREATE'){
-          let new_max_id = state.max_id + 1;
-          let newContents = state.contents.concat();
-          newContents.push({id:new_max_id ,title:action.title, desc:action.desc})
+          let newMaxId = state.max_id + 1;
+          let newContents = state.contents.concat(); 
+          newContents.push({id:newMaxId ,title:action.title, desc:action.desc})
           newState = Object.assign({},state,{
-            max_id : new_max_id,
+            max_id : newMaxId,
             contents : newContents,
             mode:'read',
           })
         }
-        console.log(action,state,newstate);
-        return newstate;
+        console.log(action,state,newState);
+        return newState;
       }
       let store = Redux.createStore(reducer);
       store.subscribe(article);
