@@ -1,6 +1,10 @@
 *{
     color: #96D0FF;
 }
+body{
+    /* background-color: #C6FFDD; */
+    background-color: aliceblue;
+}
 li{
       color: #F4C7EE;
 }

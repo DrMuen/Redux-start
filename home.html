@@ -17,6 +17,10 @@
         <header>
         <h1><a href="/" onclick="
           event.preventDefault();
+          store.dispatch({
+            type:'SELECT',
+            id:null,
+          })
           ">하이루</a></h1>
         안녕,조용한 밤이야.
         </header>
@@ -52,9 +56,17 @@
         <ul>
            <li><a onclick="
             event.preventDefault();
-            
+            store.dispatch({
+              type:'CHANGE_CREATE',
+              mode:'create',
+            })
             "  href="/create">Create</a></li>
-           <li><input type="button" value="delete"></li>
+           <li><input onclick="
+            store.dispatch({
+              type:'DELETE',
+            })
+            "
+            type="button" value="delete"></li>
        </ul>
     `;
       }
@@ -86,10 +98,15 @@
           </article>
           ` 
         }else if(state.mode === 'read'){
-          let i = 0;
           let aTitle,aDesc;
+          while(state.selected_id === null){
+            aTitle = '흐아아아아암'
+            aDesc = '사실좀ㅁ졸려어';
+            break;
+          }
+          let i = 0;
           while(i < state.contents.length){
-          if(state.contents[i].id === state.seleced_id){
+          if(state.contents[i].id === state.selected_id){
               aTitle = state.contents[i].title;
               aDesc = state.contents[i].desc;
               break;
@@ -102,14 +119,21 @@
           ${aDesc}
           </article>
           `
+        }else if(state.mode === 'done'){
+          document.querySelector('#content').innerHTML = `
+          <article>
+          <h2>'짠!'</h2>
+          '지웠어_'
+          </article>
+          `
         }
       }
       function reducer(state,action){
         if(state === undefined){
           return {
             max_id:2,
-            mode:'create',
-            seleced_id:2,
+            mode:'read',
+            selected_id:null,
             contents:[
               {id:1,title:'바람',desc:'산책나갈까아'},
               {id:2,title:'공기',desc:'비우는마음'}     
@@ -119,7 +143,8 @@
         let newState;
         if(action.type === 'SELECT'){
           newState = Object.assign({},state,{
-            seleced_id:action.id,
+            selected_id:action.id,
+            mode:'read',
           })
         }else if(action.type === 'CREATE'){
           let newMaxId = state.max_id + 1;
@@ -130,6 +155,26 @@
             contents : newContents,
             mode:'read',
           })
+        }else if(action.type === 'CHANGE_CREATE'){
+          newState = Object.assign({},state,{
+            mode:'create',
+          })
+        }else if(action.type === 'DELETE'){
+          let newContents = [];
+          let i = 0;
+          while( i < state.contents.length){
+            if(state.selected_id !== state.contents[i].id){
+              newContents.push(
+              state.contents[i]
+              )
+            }
+            i = i + 1;
+            newState = Object.assign({},state,{
+              contents : newContents,
+              mode : 'done'
+          })
+          return newState;
+          }
         }
         console.log(action,state,newState);
         return newState;
@@ -137,6 +182,7 @@
       let store = Redux.createStore(reducer);
       store.subscribe(article);
       store.subscribe(toc);
+      store.subscribe(control);
       subject();
       toc();
       control();
